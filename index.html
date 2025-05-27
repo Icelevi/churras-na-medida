@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churras na Medida - A Calculadora Definitiva</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* Estilo "Churras Rústico Moderno" */
+        :root {
+            --cor-fundo: #1a1a1a;
+            --cor-container: #2b2b2b;
+            --cor-texto-principal: #f5f5f5;
+            --cor-texto-secundario: #a0a0a0;
+            --cor-destaque: #e67e22; /* Laranja queimado */
+            --cor-sombra: rgba(0, 0, 0, 0.5);
+            --fonte-titulo: 'Bebas Neue', cursive;
+            --fonte-corpo: 'Roboto', sans-serif;
+        }
+
+        body {
+            font-family: var(--fonte-corpo);
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto-principal);
+            margin: 0;
+            line-height: 1.6;
+            background-image: url('https://www.transparenttextures.com/patterns/dark-wood.png');
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0; /* Removido padding para aplicar nos filhos */
+            background-color: var(--cor-container);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px var(--cor-sombra);
+            box-sizing: border-box;
+        }
+
+        .header-container {
+             border-top-left-radius: 12px;
+             border-top-right-radius: 12px;
+             overflow: hidden; 
+             background-color: rgba(0,0,0,0.2);
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 3px solid var(--cor-destaque);
+        }
+
+        header h1 {
+            font-family: var(--fonte-titulo);
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            color: var(--cor-destaque);
+            margin: 0;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+
+        header p {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: var(--cor-texto-secundario);
+        }
+        
+        .main-content-container {
+            padding: 20px;
+        }
+
+        h2, h3 {
+            font-family: var(--fonte-titulo);
+            letter-spacing: 1px;
+            color: var(--cor-destaque);
+        }
+
+        h2 {
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            margin-top: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+            padding: 25px;
+            background-color: #333;
+            border-radius: 8px;
+            border-left: 5px solid var(--cor-destaque);
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--cor-texto-secundario);
+        }
+
+        .input-group input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #555;
+            background-color: #444;
+            color: var(--cor-texto-principal);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            box-sizing: border-box;
+        }
+        .input-group input[type="number"]:focus {
+            border-color: var(--cor-destaque);
+            box-shadow: 0 0 5px var(--cor-destaque);
+            outline: none;
+        }
+
+        .input-group h4 {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+
+        .checkbox-group label, .range-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+         .range-group {
+            margin-top: 10px;
+            padding-left: 25px; 
+        }
+
+        .range-group input[type="range"] {
+            flex-grow: 1;
+            margin-left: 10px;
+            margin-right: 10px;
+            accent-color: var(--cor-destaque);
+        }
+        .range-group span {
+            min-width: 70px; 
+            text-align: right;
+            color: var(--cor-texto-principal);
+        }
+
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.3);
+            accent-color: var(--cor-destaque);
+        }
+
+        button[type="submit"], .action-button { 
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-family: var(--fonte-titulo);
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            letter-spacing: 1.5px;
+            color: #fff;
+            background-color: var(--cor-destaque);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            text-transform: uppercase;
+            margin-top: 10px; 
+            box-sizing: border-box;
+        }
+
+        button[type="submit"]:hover, .action-button:hover {
+            background-color: #d35400;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+        
+        #botoes-acao {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px; 
+        }
+
+        @media (min-width: 600px) {
+            #botoes-acao {
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* Dois botões lado a lado */
+                gap: 10px;
+            }
+        }
+
+        #resultado {
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+
+        #lista-compras ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #lista-compras li {
+            background-color: #333;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-left: 5px solid var(--cor-destaque);
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        #lista-compras li:hover {
+            background-color: #3a3a3a;
+        }
+
+        #lista-compras li strong {
+            color: var(--cor-destaque);
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #copiar-lista { background-color: #27ae60; }
+        #copiar-lista:hover { background-color: #229954; }
+        #baixar-pdf { background-color: #3498db; }
+        #baixar-pdf:hover { background-color: #2980b9; }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            margin-top: auto;
+            color: var(--cor-texto-secundario);
+            font-size: 0.9rem;
+            background-color: rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            .main-content-container {
+                padding: 15px;
+            }
+            header h1 { font-size: 2.5rem; }
+            header p { font-size: 1rem; }
+            .input-group { padding: 20px; }
+            .range-group { padding-left: 5px; }
+            .range-group label { flex-direction: column; align-items: flex-start; }
+            .range-group input[type="range"] { width: 100%; margin-left: 0; margin-top: 5px; }
+            .range-group span { margin-top: 5px; margin-left: 0; text-align: left; }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 960px; 
+            }
+             .main-content-container {
+                padding: 30px; 
+            }
+            .input-group {
+                padding: 30px; 
+            }
+            #botoes-acao {
+                 grid-template-columns: 1fr 1fr; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container"> 
+        <div class="header-container"> 
+            <header>
+                <h1>🔥 Churras na Medida</h1>
+                <p>A calculadora definitiva para o seu churrasco perfeito.</p>
+            </header>
+        </div>
+
+        <main class="main-content-container"> 
+            <section id="calculadora">
+                <h2>Monte seu Churrasco</h2>
+                <form id="churras-form">
+                    <div class="input-group">
+                        <h3>1. Quem vai participar?</h3>
+                        <label for="homens">Homens (que consomem mais)</label>
+                        <input type="number" id="homens" name="homens" min="0" max="1000" value="1" aria-label="Número de homens" maxlength="4">
+                        
+                        <label for="mulheres">Mulheres (que consomem moderadamente)</label>
+                        <input type="number" id="mulheres" name="mulheres" min="0" max="1000" value="1" aria-label="Número de mulheres" maxlength="4">
+                        
+                        <label for="criancas">Crianças (até 10 anos)</label>
+                        <input type="number" id="criancas" name="criancas" min="0" max="1000" value="0" aria-label="Número de crianças" maxlength="4">
+                    </div>
+
+                    <div class="input-group">
+                        <h3>2. Duração do Evento</h3>
+                        <label for="duracao">Quantas horas de churrasco?</label>
+                        <input type="number" id="duracao" name="duracao" min="1" max="24" value="4" aria-label="Duração do evento em horas" maxlength="2">
+                    </div>
+
+                    <div class="input-group">
+                        <h3>3. O que vamos servir?</h3>
+                        
+                        <h4>Carnes Bovinas</h4>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="item" value="bovina_picanha" checked> Picanha</label>
+                            <label><input type="checkbox" name="item" value="bovina_alcatra"> Alcatra</label>
+                            <label><input type="checkbox" name="item" value="bovina_maminha"> Maminha</label>
+                            <label><input type="checkbox" name="item" value="bovina_contra_file"> Contra Filé / Chorizo</label>
+                            <label><input type="checkbox" name="item" value="bovina_cupim"> Cupim</label>
+                        </div>
+
+                        <h4>Outras Carnes</h4>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="item" value="frango_asinha_coxinha" checked> Asinha/Coxinha de Frango</label>
+                            <label><input type="checkbox" name="item" value="frango_coracao"> Coração de Frango</label>
+                            <label><input type="checkbox" name="item" value="suina_linguica_toscana" checked> Linguiça Toscana</label>
+                            <label><input type="checkbox" name="item" value="suina_linguica_artesanal"> Linguiça Artesanal (apimentada, cuiabana, etc)</label>
+                            <label><input type="checkbox" name="item" value="suina_lombo"> Lombo Suíno</label>
+                            <label><input type="checkbox" name="item" value="suina_costelinha"> Costelinha Suína</label>
+                            <label><input type="checkbox" name="item" value="cordeiro_carre"> Carré de Cordeiro</label>
+                        </div>
+
+                        <h4>Opções Vegetarianas/Veganas</h4>
+                        <div class="checkbox-group">
+                             <label><input type="checkbox" name="item" value="vegetariano_legumes_grelhados"> Espetinhos de Legumes (abobrinha, berinjela, pimentão, cebola)</label>
+                             <label><input type="checkbox" name="item" value="vegetariano_queijo_coalho"> Queijo Coalho / Halloumi</label>
+                             <label><input type="checkbox" name="item" value="vegetariano_hamburguer_veggie"> Hambúrguer Vegetariano/Vegano</label>
+                             <label><input type="checkbox" name="item" value="vegetariano_cogumelos"> Cogumelos (Portobello, Shitake)</label>
+                        </div>
+
+                        <h4>Bebidas</h4>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" name="item" value="cerveja" id="checkbox-cerveja" checked> Cerveja (Lata/Long Neck)
+                            </label>
+                            <div id="range-cerveja-container" class="range-group">
+                                <label for="range-cerveja-adulto">Latas por adulto que bebe:
+                                    <input type="range" id="range-cerveja-adulto" name="range-cerveja-adulto" min="0" max="20" value="6">
+                                    <span id="valor-range-cerveja">6 latas</span>
+                                </label>
+                            </div>
+                            <label><input type="checkbox" name="item" value="chopp"> Chopp (Barril)</label>
+                            <label><input type="checkbox" name="item" value="refrigerante" checked> Refrigerante</label>
+                            <label><input type="checkbox" name="item" value="agua" checked> Água Mineral (com e sem gás)</label>
+                            <label><input type="checkbox" name="item" value="suco"> Suco Natural / Polpa</label>
+                            <label><input type="checkbox" name="item" value="ice_tea"> Chá Gelado (Ice Tea)</label>
+                        </div>
+
+                        <h4>Acompanhamentos e Extras</h4>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="item" value="pao_de_alho" checked> Pão de Alho</label>
+                            <label><input type="checkbox" name="item" value="pao_frances"> Pão Francês (para vinagrete/linguiça)</label>
+                            <label><input type="checkbox" name="item" value="farofa" checked> Farofa Pronta / Temperada</label>
+                            <label><input type="checkbox" name="item" value="vinagrete" checked> Vinagrete (Tomate, Cebola, Pimentão)</label>
+                            <label><input type="checkbox" name="item" value="arroz_branco"> Arroz Branco</label>
+                            <label><input type="checkbox" name="item" value="arroz_biro_biro"> Arroz Biro-Biro</label>
+                            <label><input type="checkbox" name="item" value="salada_maionese"> Salada de Maionese</label>
+                            <label><input type="checkbox" name="item" value="salada_folhas_verdes"> Salada de Folhas Verdes</label>
+                            <label><input type="checkbox" name="item" value="molho_barbecue"> Molho Barbecue</label>
+                            <label><input type="checkbox" name="item" value="molho_pimenta"> Molho de Pimenta</label>
+                            <label><input type="checkbox" name="item" value="carvao" checked> Carvão</label>
+                            <label><input type="checkbox" name="item" value="gelo" checked> Gelo em Cubos / Escama</label>
+                            <label><input type="checkbox" name="item" value="sal_grosso"> Sal Grosso</label>
+                            <label><input type="checkbox" name="item" value="descartaveis"> Pratos/Copos/Talheres Descartáveis</label>
+                        </div>
+                    </div>
+
+                    <button type="submit">Calcular Quantidades</button>
+                </form>
+            </section>
+
+            <section id="resultado" class="hidden">
+                <h2>📋 Sua Lista de Compras</h2>
+                <div id="lista-compras">
+                    </div>
+                <div id="botoes-acao">
+                    <button id="copiar-lista" class="action-button hidden">Copiar Lista</button>
+                    <button id="baixar-pdf" class="action-button hidden">Baixar PDF</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; <span id="currentYear"></span> Churras na Medida. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // Lógica da Calculadora "Churras na Medida"
+        document.addEventListener('DOMContentLoaded', function() {
+            const { jsPDF } = window.jspdf; 
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+            const CONSUMO_GRAMAS = {
+                adulto_principal: 500, adulto_secundario: 150,
+                adulto_moderado_principal: 350, adulto_moderado_secundario: 100,
+                crianca_principal: 200, crianca_secundario: 75,
+                vegetariano_principal_unidade: 1.5, 
+                vegetariano_legumes_queijo_kg: 0.250, 
+                vegetariano_cogumelos_kg: 0.150 
+            };
+
+            const BEBIDAS_ACOMPANHAMENTOS = {
+                chopp_litro_adulto: 1.5,
+                refrigerante_litro_pessoa: 0.6, agua_litro_pessoa: 0.5, suco_litro_pessoa: 0.5,
+                ice_tea_litro_pessoa: 0.4, pao_de_alho_unidade: 2, pao_frances_unidade: 1.5,
+                farofa_kg_pessoa: 0.08, vinagrete_kg_pessoa: 0.1, arroz_kg_cozido_pessoa: 0.15,
+                salada_maionese_kg_pessoa: 0.12, salada_folhas_kg_pessoa: 0.07,
+                molho_barbecue_ml_pessoa: 50, molho_pimenta_ml_pessoa: 20,
+                gelo_kg_pessoa: 1.0, 
+                sal_grosso_kg_por_kg_carne: 0.02, descartaveis_kit_pessoa: 1.3
+            };
+
+            const form = document.getElementById('churras-form');
+            const resultadoSection = document.getElementById('resultado');
+            const listaComprasDiv = document.getElementById('lista-compras');
+            const copiarBotao = document.getElementById('copiar-lista');
+            const baixarPdfBotao = document.getElementById('baixar-pdf');
+            
+            let ultimoResultadoParaPdf = {};
+            let dadosEventoParaPdf = {}; 
+
+            const checkboxCerveja = document.getElementById('checkbox-cerveja');
+            const rangeCervejaContainer = document.getElementById('range-cerveja-container');
+            const rangeCervejaAdulto = document.getElementById('range-cerveja-adulto');
+            const valorRangeCerveja = document.getElementById('valor-range-cerveja');
+
+            function toggleRangeCerveja() {
+                if (checkboxCerveja.checked) {
+                    rangeCervejaContainer.style.display = 'block'; 
+                } else {
+                    rangeCervejaContainer.style.display = 'none'; 
+                }
+            }
+
+            if(checkboxCerveja){
+                checkboxCerveja.addEventListener('change', toggleRangeCerveja);
+            }
+            if(rangeCervejaAdulto && valorRangeCerveja){
+                rangeCervejaAdulto.addEventListener('input', function() {
+                    valorRangeCerveja.textContent = `${this.value} latas`;
+                });
+            }
+            toggleRangeCerveja(); 
+
+            const inputsParaLimitar = ['homens', 'mulheres', 'criancas', 'duracao'];
+            inputsParaLimitar.forEach(id => {
+                const inputElement = document.getElementById(id);
+                if (inputElement) {
+                    inputElement.addEventListener('input', function() {
+                        this.value = this.value.replace(/[^0-9]/g, ''); 
+                        if (this.maxLength > 0 && this.value.length > parseInt(this.maxLength)) {
+                            this.value = this.value.slice(0, parseInt(this.maxLength));
+                        }
+                        const maxVal = parseInt(this.max);
+                        if (!isNaN(maxVal) && parseInt(this.value) > maxVal) {
+                            this.value = maxVal.toString();
+                        }
+                        const minVal = parseInt(this.min);
+                         if (!isNaN(minVal) && this.value !== "" && parseInt(this.value) < minVal) {
+                            this.value = minVal.toString();
+                        }
+                    });
+                }
+            });
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const homens = parseInt(document.getElementById('homens').value) || 0;
+                const mulheres = parseInt(document.getElementById('mulheres').value) || 0;
+                const criancas = parseInt(document.getElementById('criancas').value) || 0;
+                const duracao = parseInt(document.getElementById('duracao').value) || 4;
+
+                dadosEventoParaPdf = { homens, mulheres, criancas, duracao };
+
+                const itensSelecionados = Array.from(document.querySelectorAll('input[name="item"]:checked')).map(el => el.value);
+
+                if (homens + mulheres + criancas === 0) {
+                    listaComprasDiv.innerHTML = '<p>Por favor, informe o número de participantes.</p>';
+                    resultadoSection.classList.remove('hidden');
+                    [copiarBotao, baixarPdfBotao].forEach(el => el.classList.add('hidden'));
+                    return;
+                }
+                if (itensSelecionados.length === 0) {
+                    listaComprasDiv.innerHTML = '<p>Selecione pelo menos um item para calcular.</p>';
+                    resultadoSection.classList.remove('hidden');
+                    [copiarBotao, baixarPdfBotao].forEach(el => el.classList.add('hidden'));
+                    return;
+                }
+
+                const totalPessoas = homens + mulheres + criancas;
+                
+                let fatorDuracao = 1.0;
+                if (duracao > 4) { fatorDuracao += (duracao - 4) * 0.20; } 
+                else if (duracao < 4 && duracao >=2) { fatorDuracao -= (4 - duracao) * 0.15; } 
+                else if (duracao < 2) { fatorDuracao -= (4 - 2) * 0.15; }
+                fatorDuracao = Math.max(0.7, fatorDuracao); 
+
+                let resultados = {};
+                let totalCarneCalculadaKg = 0;
+
+                let apetiteTotalPrincipalGramas = (homens * CONSUMO_GRAMAS.adulto_principal) + (mulheres * CONSUMO_GRAMAS.adulto_moderado_principal) + (criancas * CONSUMO_GRAMAS.crianca_principal);
+                apetiteTotalPrincipalGramas *= fatorDuracao;
+
+                let apetiteTotalSecundarioGramas = (homens * CONSUMO_GRAMAS.adulto_secundario) + (mulheres * CONSUMO_GRAMAS.adulto_moderado_secundario) + (criancas * CONSUMO_GRAMAS.crianca_secundario);
+                apetiteTotalSecundarioGramas *= fatorDuracao;
+
+                const carnesBovinasSelecionadas = itensSelecionados.filter(i => i.startsWith('bovina_'));
+                const outrasCarnesSelecionadas = itensSelecionados.filter(i => i.startsWith('frango_') || i.startsWith('suina_') || i.startsWith('cordeiro_'));
+                
+                if (carnesBovinasSelecionadas.length > 0) {
+                    const gramasPorTipoBovino = (apetiteTotalPrincipalGramas * 0.6) / carnesBovinasSelecionadas.length; 
+                    carnesBovinasSelecionadas.forEach(tipo => {
+                        resultados[tipo] = `${(gramasPorTipoBovino / 1000).toFixed(2)} kg`;
+                        totalCarneCalculadaKg += gramasPorTipoBovino / 1000;
+                    });
+                }
+                
+                let apetiteRestantePrincipal = apetiteTotalPrincipalGramas * (carnesBovinasSelecionadas.length > 0 ? 0.4 : 1.0);
+                let apetiteTotalParaOutrasCarnes = apetiteRestantePrincipal + apetiteTotalSecundarioGramas;
+
+                if (outrasCarnesSelecionadas.length > 0) {
+                    const gramasPorTipoOutras = apetiteTotalParaOutrasCarnes / outrasCarnesSelecionadas.length;
+                    outrasCarnesSelecionadas.forEach(tipo => {
+                        resultados[tipo] = `${(gramasPorTipoOutras / 1000).toFixed(2)} kg`;
+                        totalCarneCalculadaKg += gramasPorTipoOutras / 1000;
+                    });
+                }
+
+                if (itensSelecionados.includes('vegetariano_hamburguer_veggie')) { resultados['vegetariano_hamburguer_veggie'] = `${Math.ceil(totalPessoas * CONSUMO_GRAMAS.vegetariano_principal_unidade * (fatorDuracao * 0.5))} unidades`; }
+                if (itensSelecionados.includes('vegetariano_legumes_grelhados')) { resultados['vegetariano_legumes_grelhados'] = `${(totalPessoas * CONSUMO_GRAMAS.vegetariano_legumes_queijo_kg * (fatorDuracao * 0.3)).toFixed(2)} kg`; }
+                if (itensSelecionados.includes('vegetariano_queijo_coalho')) { resultados['vegetariano_queijo_coalho'] = `${(totalPessoas * CONSUMO_GRAMAS.vegetariano_legumes_queijo_kg * (fatorDuracao * 0.3)).toFixed(2)} kg`; }
+                if (itensSelecionados.includes('vegetariano_cogumelos')) { resultados['vegetariano_cogumelos'] = `${(totalPessoas * CONSUMO_GRAMAS.vegetariano_cogumelos_kg * (fatorDuracao * 0.2)).toFixed(2)} kg`; }
+                
+                const adultosConsomemAlcool = homens + mulheres; 
+                if (itensSelecionados.includes('cerveja') && rangeCervejaAdulto) { 
+                    const latasPorAdulto = parseInt(rangeCervejaAdulto.value);
+                    const totalLatas = Math.ceil(adultosConsomemAlcool * latasPorAdulto * fatorDuracao);
+                    resultados['cerveja'] = `${totalLatas} latas (350ml) ou ${(totalLatas * 0.350).toFixed(1)} L`;
+                }
+                if (itensSelecionados.includes('chopp')) { resultados['chopp'] = `${(adultosConsomemAlcool * BEBIDAS_ACOMPANHAMENTOS.chopp_litro_adulto * fatorDuracao).toFixed(1)} L`; }
+                if (itensSelecionados.includes('refrigerante')) { resultados['refrigerante'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.refrigerante_litro_pessoa * fatorDuracao).toFixed(1)} L`; }
+                if (itensSelecionados.includes('agua')) { resultados['agua'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.agua_litro_pessoa * fatorDuracao).toFixed(1)} L`; }
+                if (itensSelecionados.includes('suco')) { resultados['suco'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.suco_litro_pessoa * fatorDuracao).toFixed(1)} L`; }
+                if (itensSelecionados.includes('ice_tea')) { resultados['ice_tea'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.ice_tea_litro_pessoa * fatorDuracao).toFixed(1)} L`; }
+                if (itensSelecionados.includes('pao_de_alho')) { resultados['pao_de_alho'] = `${Math.ceil(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.pao_de_alho_unidade * fatorDuracao)} unidades`; }
+                if (itensSelecionados.includes('pao_frances')) { resultados['pao_frances'] = `${Math.ceil(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.pao_frances_unidade * fatorDuracao)} unidades`; }
+                if (itensSelecionados.includes('farofa')) { resultados['farofa'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.farofa_kg_pessoa * fatorDuracao).toFixed(2)} kg`; }
+                if (itensSelecionados.includes('vinagrete')) { resultados['vinagrete'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.vinagrete_kg_pessoa * fatorDuracao).toFixed(2)} kg`; }
+                if (itensSelecionados.includes('arroz_branco')) { resultados['arroz_branco'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.arroz_kg_cozido_pessoa * fatorDuracao).toFixed(2)} kg (cozido)`; }
+                if (itensSelecionados.includes('arroz_biro_biro')) { resultados['arroz_biro_biro'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.arroz_kg_cozido_pessoa * fatorDuracao * 1.1).toFixed(2)} kg (cozido)`; }
+                if (itensSelecionados.includes('salada_maionese')) { resultados['salada_maionese'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.salada_maionese_kg_pessoa * fatorDuracao).toFixed(2)} kg`; }
+                if (itensSelecionados.includes('salada_folhas_verdes')) { resultados['salada_folhas_verdes'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.salada_folhas_kg_pessoa * fatorDuracao).toFixed(2)} kg`; }
+                if (itensSelecionados.includes('molho_barbecue')) { resultados['molho_barbecue'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.molho_barbecue_ml_pessoa * fatorDuracao).toFixed(0)} ml`; }
+                if (itensSelecionados.includes('molho_pimenta')) { resultados['molho_pimenta'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.molho_pimenta_ml_pessoa * fatorDuracao).toFixed(0)} ml`; }
+
+                if (itensSelecionados.includes('carvao')) {
+                    let carvaoKg = 0;
+                    const algoParaGrelhar = totalCarneCalculadaKg > 0 || itensSelecionados.some(i => i.startsWith('vegetariano_'));
+                    if (algoParaGrelhar) {
+                        if (totalPessoas <= 10 && totalCarneCalculadaKg <= 3) { carvaoKg = 4; } 
+                        else if (totalPessoas <= 30 && totalCarneCalculadaKg <= 8) { carvaoKg = 7; } 
+                        else { carvaoKg = 10; }
+                        if (duracao > 3) { carvaoKg += (duracao - 3) * 2; }
+                        if (totalCarneCalculadaKg > 10) { carvaoKg += Math.floor((totalCarneCalculadaKg - 10) / 5) * 2.5; }
+                        carvaoKg = Math.max(carvaoKg, 3); 
+                        carvaoKg = Math.min(carvaoKg, 30); 
+                        resultados['carvao'] = `${carvaoKg.toFixed(1)} kg`;
+                    } else {
+                        resultados['carvao'] = `Aprox. 3.0 kg (mínimo)`;
+                    }
+                }
+
+                if (itensSelecionados.includes('gelo')) { resultados['gelo'] = `${(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.gelo_kg_pessoa * fatorDuracao).toFixed(1)} kg`; }
+                if (itensSelecionados.includes('sal_grosso') && totalCarneCalculadaKg > 0) { resultados['sal_grosso'] = `${(totalCarneCalculadaKg * BEBIDAS_ACOMPANHAMENTOS.sal_grosso_kg_por_kg_carne).toFixed(2)} kg`; } 
+                else if (itensSelecionados.includes('sal_grosso')) { resultados['sal_grosso'] = `Aprox. 0.100 kg`; }
+                if (itensSelecionados.includes('descartaveis')) { resultados['descartaveis'] = `${Math.ceil(totalPessoas * BEBIDAS_ACOMPANHAMENTOS.descartaveis_kit_pessoa)} kits`; }
+                
+                ultimoResultadoParaPdf = resultados; 
+                exibirResultados(resultados);
+            });
+            
+            const nomesItens = {
+                bovina_picanha: 'Picanha Bovina', bovina_alcatra: 'Alcatra Bovina',
+                bovina_maminha: 'Maminha Bovina', bovina_contra_file: 'Contra Filé / Chorizo Bovino',
+                bovina_cupim: 'Cupim Bovino', frango_asinha_coxinha: 'Asinha/Coxinha de Frango',
+                frango_coracao: 'Coração de Frango', suina_linguica_toscana: 'Linguiça Toscana Suína',
+                suina_linguica_artesanal: 'Linguiça Artesanal Suína', suina_lombo: 'Lombo Suíno',
+                suina_costelinha: 'Costelinha Suína', cordeiro_carre: 'Carré de Cordeiro',
+                vegetariano_legumes_grelhados: 'Espetinhos de Legumes Grelhados',
+                vegetariano_queijo_coalho: 'Queijo Coalho / Halloumi',
+                vegetariano_hamburguer_veggie: 'Hambúrguer Vegetariano/Vegano',
+                vegetariano_cogumelos: 'Cogumelos (Portobello, Shitake)', cerveja: 'Cerveja',
+                chopp: 'Chopp', refrigerante: 'Refrigerante', agua: 'Água Mineral', suco: 'Suco',
+                ice_tea: 'Chá Gelado (Ice Tea)', pao_de_alho: 'Pão de Alho', pao_frances: 'Pão Francês',
+                farofa: 'Farofa Pronta/Temperada', vinagrete: 'Vinagrete', arroz_branco: 'Arroz Branco',
+                arroz_biro_biro: 'Arroz Biro-Biro', salada_maionese: 'Salada de Maionese',
+                salada_folhas_verdes: 'Salada de Folhas Verdes', molho_barbecue: 'Molho Barbecue',
+                molho_pimenta: 'Molho de Pimenta', carvao: 'Carvão', gelo: 'Gelo',
+                sal_grosso: 'Sal Grosso', descartaveis: 'Descartáveis (Pratos, Copos, Talheres)'
+            };
+
+            function exibirResultados(resultadosObj) {
+                if (Object.keys(resultadosObj).length === 0 && (parseInt(document.getElementById('homens').value) || 0) + (parseInt(document.getElementById('mulheres').value) || 0) + (parseInt(document.getElementById('criancas').value) || 0) > 0) {
+                     listaComprasDiv.innerHTML = '<p>Nenhum item selecionado para cálculo ou quantidades zeradas.</p>';
+                     resultadoSection.classList.remove('hidden');
+                     [copiarBotao, baixarPdfBotao].forEach(el => el.classList.add('hidden'));
+                     return;
+                }
+
+                let html = '<ul>';
+                for (const item in resultadosObj) {
+                    const nomeAmigavel = nomesItens[item] || item.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    html += `<li>${nomeAmigavel} <span><strong>${resultadosObj[item]}</strong></span></li>`;
+                }
+                html += '</ul>';
+
+                listaComprasDiv.innerHTML = html;
+                resultadoSection.classList.remove('hidden');
+                [copiarBotao, baixarPdfBotao].forEach(el => el.classList.remove('hidden'));
+                                
+                resultadoSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            copiarBotao.onclick = function() {
+                let textoCopiado = '📋 *Lista de Compras para o Churrasco na Medida:*\n\n';
+                for (const item in ultimoResultadoParaPdf) {
+                    const nomeAmigavel = nomesItens[item] || item.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    textoCopiado += `• ${nomeAmigavel}: ${ultimoResultadoParaPdf[item]}\n`;
+                }
+                const textarea = document.createElement('textarea');
+                textarea.value = textoCopiado;
+                textarea.style.position = 'fixed'; 
+                textarea.style.opacity = 0;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    const successful = document.execCommand('copy');
+                    copiarBotao.textContent = successful ? 'Lista Copiada!' : 'Erro ao Copiar';
+                } catch (err) {
+                    copiarBotao.textContent = 'Erro ao Copiar';
+                }
+                document.body.removeChild(textarea);
+                setTimeout(() => { copiarBotao.textContent = 'Copiar Lista'; }, 2000);
+            };
+
+            baixarPdfBotao.onclick = function() {
+                if (Object.keys(ultimoResultadoParaPdf).length === 0) {
+                    console.warn("Calcule uma lista primeiro para gerar o PDF."); 
+                    return;
+                }
+
+                const doc = new jsPDF();
+                const dataAtual = new Date().toLocaleDateString('pt-BR');
+                const horaAtual = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit'});
+                const pageHeight = doc.internal.pageSize.getHeight();
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const margin = 15;
+                let yPos = 0; 
+                let numeroItemGlobal = 1;
+
+                function addHeaderPdf() {
+                    doc.setFontSize(20);
+                    doc.setFont(undefined, 'bold');
+                    doc.text("Lista de Compras do Churrasco", pageWidth / 2, 20, { align: 'center' });
+                    doc.setFont(undefined, 'normal');
+                    doc.setFontSize(10);
+                    doc.text(`Gerado em: ${dataAtual} às ${horaAtual}`, pageWidth / 2, 28, { align: 'center' });
+                    yPos = 35; 
+                }
+
+                function addFooterPdf() {
+                    doc.setFontSize(8);
+                    doc.setTextColor(150);
+                    doc.text(`Churras na Medida - Página ${doc.internal.getNumberOfPages()}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+                    doc.setTextColor(0); 
+                }
+                
+                function checkPageBreak() {
+                    if (yPos > pageHeight - 25) { 
+                        addFooterPdf(); 
+                        doc.addPage();
+                        addHeaderPdf(); 
+                        yPos = 40; 
+                    }
+                }
+                
+                addHeaderPdf(); 
+
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                yPos += 7;
+                doc.text("Detalhes do Evento:", margin, yPos);
+                yPos += 7;
+                doc.setFont(undefined, 'normal');
+                doc.text(`- Homens: ${dadosEventoParaPdf.homens}`, margin + 5, yPos);
+                yPos += 6;
+                doc.text(`- Mulheres: ${dadosEventoParaPdf.mulheres}`, margin + 5, yPos);
+                yPos += 6;
+                doc.text(`- Crianças: ${dadosEventoParaPdf.criancas}`, margin + 5, yPos);
+                yPos += 6;
+                doc.text(`- Duração: ${dadosEventoParaPdf.duracao} horas`, margin + 5, yPos);
+                yPos += 10; 
+
+                const categoriasPdf = {
+                    "Carnes Bovinas": ['bovina_picanha', 'bovina_alcatra', 'bovina_maminha', 'bovina_contra_file', 'bovina_cupim'],
+                    "Outras Carnes": ['frango_asinha_coxinha', 'frango_coracao', 'suina_linguica_toscana', 'suina_linguica_artesanal', 'suina_lombo', 'suina_costelinha', 'cordeiro_carre'],
+                    "Opções Vegetarianas/Veganas": ['vegetariano_legumes_grelhados', 'vegetariano_queijo_coalho', 'vegetariano_hamburguer_veggie', 'vegetariano_cogumelos'],
+                    "Bebidas": ['cerveja', 'chopp', 'refrigerante', 'agua', 'suco', 'ice_tea'],
+                    "Acompanhamentos e Extras": ['pao_de_alho', 'pao_frances', 'farofa', 'vinagrete', 'arroz_branco', 'arroz_biro_biro', 'salada_maionese', 'salada_folhas_verdes', 'molho_barbecue', 'molho_pimenta', 'carvao', 'gelo', 'sal_grosso', 'descartaveis']
+                };
+
+                for (const nomeCategoria in categoriasPdf) {
+                    checkPageBreak();
+                    const itensDaCategoria = categoriasPdf[nomeCategoria].filter(itemKey => ultimoResultadoParaPdf.hasOwnProperty(itemKey));
+
+                    if (itensDaCategoria.length > 0) {
+                        doc.setFontSize(14);
+                        doc.setFont(undefined, 'bold');
+                        if (!(yPos === 40 && doc.internal.getNumberOfPages() > 1)) { yPos += 8; }
+                        checkPageBreak();
+                        doc.text(nomeCategoria, margin, yPos);
+                        yPos += 8;
+                        doc.setFontSize(11); 
+                        doc.setFont(undefined, 'normal');
+
+                        itensDaCategoria.forEach(itemKey => {
+                            checkPageBreak();
+                            const nomeAmigavel = nomesItens[itemKey] || itemKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                            const quantidade = ultimoResultadoParaPdf[itemKey];
+                            doc.text(`${numeroItemGlobal}. ${nomeAmigavel}:`, margin + 2, yPos);
+                            doc.text(String(quantidade), pageWidth - margin - 5, yPos, { align: 'right' }); 
+                            yPos += 7; 
+                            numeroItemGlobal++;
+                        });
+                         yPos += 3; 
+                    }
+                }
+                
+                addFooterPdf(); 
+
+                doc.save(`lista_churrasco_${new Date().toISOString().slice(0,10)}.pdf`);
+                
+                baixarPdfBotao.textContent = 'PDF Gerado!';
+                 setTimeout(() => { baixarPdfBotao.textContent = 'Baixar PDF'; }, 2000);
+            };
+        });
+    </script>
+</body>
+</html>
